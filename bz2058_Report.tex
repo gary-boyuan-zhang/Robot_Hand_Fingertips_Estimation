@@ -1,0 +1,752 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{bz2058\_Report}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+    \hypertarget{problem}{%
+\subsection{Problem}\label{problem}}
+
+This is a regression problem, where we are given the images of the hand
+of a robot from different angles, and we're asked to predict the
+coordinates of each of the fingertips of the robot. Since we're given
+the training data and labels, this is also a supervised learning
+problem.
+
+    \hypertarget{approach}{%
+\subsection{Approach}\label{approach}}
+
+In order to address this problem, we are going to implement a neural
+network. In specific, neural network could transform the image data, and
+would then enable us to learn the representation from the
+transformations, which would be helpful and critical for us to predict
+the target that we're interested in.
+
+    \hypertarget{implementation}{%
+\subsection{Implementation}\label{implementation}}
+
+This project is implemented using Python programming language and within
+Google Colab environment. The majority of the works are conducted within
+Tensorflow framework, along with other libraries including Numpy,
+Pandas, Scikit-learn, and PyTorch. In order to make the implementation
+process more efficient, hardware accelerator, in specific, NVIDIA P100
+and T4 GPUs, are used.
+
+    \hypertarget{data}{%
+\section{Data}\label{data}}
+
+The data we're given is the RGBD images of the hand of a robot from 3
+different angles. In specific, each hand position(sample) is comprised
+of the following three properties:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{RGB image}: has dimension \emph{(num\_data\_samples,
+  num\_camera\_views, num\_channels, height, width)}
+\item
+  \textbf{Depth image}: has dimension \emph{(num\_data\_samples,
+  num\_camera\_views, height, width)}
+\item
+  \textbf{File ID}: contains the sample ID
+\end{itemize}
+
+Since the robot hand has 4 fingers, the output of the model is expected
+to have the \((x, y, z)\) coordinates of all 4 fingertips, which would
+end up with an output of shape \emph{(num\_data\_samples, 12)} with
+columns corresponding to
+\((x_1, y_1, z_1, x_2, y_2, z_2, x_3, y_3, z_3, x_4, y_4, z_4)\) and
+each row corresponding to a sample uniquely identified by
+\emph{file\_id}.
+
+Specifically, there are 3396 samples in the training data we're given.
+So we have RGB images with dimensions (3396, 3, 3, 224, 224) and depth
+images with dimensions (3396, 3, 224, 224). Below provides an example
+displaying a sample in the training dataset with its file\_id,
+rgb\_image, and depth\_image along with its training labels.
+
+\((x_1, y_1, z_1) = (0.0548, 0.0530, 0.1185)\) \(\,\,\,\,\,\,\,\,\,\)
+\((x_2, y_2, z_2) = (0.0712, -0.0024, 0.1091)\)
+
+\((x_3, y_3, z_3) = (0.0993, -0.0497, 0.0397)\) \(\,\,\,\,\,\)
+\((x_4, y_4, z_4) = (0.0497, 0.0948, -0.0077)\)
+
+    \hypertarget{method}{%
+\section{Method}\label{method}}
+
+The main methodology of this project is to implement transfer learning
+technique, as the training dataset we're given is still relatively small
+in sample size. By utilizing pre-trained model and then fine tuning on
+our training dataset, we could have a better chance to achieve a better
+prediction performance while maintaining the stability of our model.
+
+With this being said, the majority of work of this project is around the
+following criteria:
+
+\begin{itemize}
+\item
+  \textbf{Data Preprocessing}: Preprocess the training data so that
+  could fit the specific dimension requrement of the base(pre-trained)
+  model of our choice;
+\item
+  \textbf{Model Training}: choice of base(pre-trained) model; more
+  architectures to be built on top of the base model to cater to our
+  specific prediction task;
+\item
+  \textbf{Model Evaluation}: choice of evaluation metrics specific to
+  our prediction task;
+\item
+  \textbf{Hyperparameter Optimization}: choice of other hyperparameters
+  to fine-tune on the base model in order to achieve better training and
+  generalization performance.
+\end{itemize}
+
+    \hypertarget{preprocessing}{%
+\section{Preprocessing}\label{preprocessing}}
+
+Data are loaded and preprocessed to fit the neural network model by
+using scaling, transformation, splitting, and normalization techniques.
+
+    \hypertarget{data-loading}{%
+\subsection{Data Loading}\label{data-loading}}
+
+Data are downloaded directly from Kaggle API. Load in the training
+images and training labels file in \texttt{.pt} format provided using
+\texttt{torch.load()} function from the \texttt{torch} package. For
+training images, further split into \emph{RGB\_images}, \emph{depth
+images}, and \emph{file\_ids} for each sample.
+
+    \hypertarget{data-scaling}{%
+\subsection{Data Scaling}\label{data-scaling}}
+
+Appropriate scaling is applied to training images and labels. In
+specific, \emph{RGB\_images} are first scaled by 255, as each channel is
+bounded between 0 and 255. Similarly, though \emph{depth\_images} do not
+really have an upper bound, we choose to scale by 1000. After this
+scaling, we're ensuring each channel in both \emph{RGB\_images} and
+\emph{depth\_images} is a fraction between 0 and 1.
+
+For training labels, notice that the coordinates in the labels are given
+in meters units, but there are really difference in the millimeter unit.
+Thus, in order to magnify the loss in the regressions during the
+training and to converge faster, we multiply the labels by 1000 to
+convert them into millimeter scale.
+
+    \hypertarget{data-transformation}{%
+\subsection{Data Transformation}\label{data-transformation}}
+
+After scaling, we manage to combine the \emph{RGB\_images} and
+\emph{depth\_images} together for each sample, by adding
+\emph{depth\_images} as an extra channel into the \emph{RGB\_images}, so
+that the training images now have 4 \emph{channels}. Furthermore, for
+simplicity and in order to reduce the dimension in training data, we
+combined the 3 different \emph{camera\_views} with 4 \emph{channels}.
+Thus, the training images end up with dimension
+\emph{(num\_data\_samples, height, width,
+num\_camera\_views×num\_channels)}, which is (3396, 224, 224, 12).
+
+    \hypertarget{data-splitting}{%
+\subsection{Data Splitting}\label{data-splitting}}
+
+Training images and labels are split into training set and validation
+set with a ratio of 70\% and 30\% using \texttt{train\_test\_split}
+function in \texttt{sklearn} package.
+
+    \hypertarget{normalization}{%
+\subsection{Normalization}\label{normalization}}
+
+Using \texttt{Normalization} layer from the \texttt{Keras} package in
+Tensorflow framework, normalization is fitted only on training images,
+and performed on both training and validation images. After
+normalization, the distribution of both training and validation images
+are shifted from mean 0.57 and standard deviation 0.48 to roughly mean 0
+and standard deviation 1.
+
+    \hypertarget{model}{%
+\section{Model}\label{model}}
+
+The final model architecture is built with a pre-trained model as a base
+model together with some additional architectures on top of the base
+model.
+
+    \hypertarget{base-model}{%
+\subsection{Base Model}\label{base-model}}
+
+Pre-trained model available online is used to initialize our neural
+network as a base model. In specific, we have considered and
+experimented the popular VGG and ResNet models. After experimental
+evaluation, we end up using ResNet50 model along with pre-trained
+weights on ImageNet as our base model.
+
+Specifically, in order to cater to our regression task, the
+fully-connected layer at the top of ResNet50 is excluded when
+initializing the base model.
+
+Since ResNet50 model requires exactly 3 input channels, we've changed
+the configuration of the input shape of the first input layer in our
+base model to 12 channels in order to fit our training data.
+
+    \hypertarget{additional-architecture}{%
+\subsection{Additional Architecture}\label{additional-architecture}}
+
+In order to generate a prediction of 12 coordinates, a fully-connected
+output layer with 12 nodes are built on top of our base model. Since
+we're working on a regression task, no(linear) activations are needed
+for the output layer.
+
+Moreover, other layer architecture and techniques have experimented as
+well. In specific, in order to prevent overfitting and increase
+generalization performance, Batch Normalization layer and Dropout layer
+have experimented. However, they did not increase the performance during
+validation, so none of them are included in our final model.
+
+    \hypertarget{training}{%
+\section{Training}\label{training}}
+
+    \hypertarget{data-preparation}{%
+\subsection{Data Preparation}\label{data-preparation}}
+
+Both training and validation images and labels are combined to tensor
+accordingly using the \texttt{Dataset} module in Tensorflow framework.
+Training dataset is shuffled with a buffer size of 1000, and both
+training and validation datasets are batched according to batch size.
+
+    \hypertarget{optimizer}{%
+\subsection{Optimizer}\label{optimizer}}
+
+Different optimizers are considered and experimented. Specifically, we
+experimented with SGD, SGD with momentum, and Adam. Eventually, we
+choose to use Adam as the optimizer, with an initial learning rate of
+0.001.
+
+    \hypertarget{learning-rate}{%
+\subsection{Learning Rate}\label{learning-rate}}
+
+Learning rate step decay techniques are utilized to better converges. In
+specific, we set the initial learning rate to be 0.001, and decay
+exponentially with a parameter \(\gamma = 0.1\) after a step size of 13
+epochs. Since we set the total epochs for training to 52, the learning
+rate would decay for exactly 3 times. Thus eventually we have a learning
+rate \(1e^{-3}, 1e^{-4}, 1e^{-5}, 1e^{-6}\) accordingly for every 13
+epochs.
+
+    \hypertarget{evaluation}{%
+\section{Evaluation}\label{evaluation}}
+
+Since we are doing a regression task, the loss is defined and calculated
+by the mean squared error between the label and the prediction.
+
+By using the cross-validation technique, we train the model on training
+dataset, and evaluate the performance of the model on the validation
+dataset. In order to align with the final evaluation on the Kaggle
+platform, we choose the evaluation metric to be root mean square error.
+
+    \hypertarget{hyperparameter-optimization}{%
+\section{Hyperparameter
+Optimization}\label{hyperparameter-optimization}}
+
+Hyperparameter optimization is an important part of our fine-tuning
+approach. In order to better convergence, grid search technique is
+performed over the batch size, initial learning rate, and step size in
+learning rate step decay. Specifically, batch size is experimented on
+over a range from 16 to 128, and initial learning rate is experimented
+over a range from 0.1 to \(1e^{-5}\). Eventually, we find that a batch
+size of 32 together with an initial learning rate of 0.001 gives the
+best validation performance.
+
+    \hypertarget{results}{%
+\section{Results}\label{results}}
+
+With all the method and techniques mentioned above being implemented,
+and after careful experiments, we end up with a training loss of 0.7796,
+training RMSE of 0.883, validation loss of 7.8494, and validation RMSE
+of 2.8017 after all 52 epochs of training.
+
+In order to strengthen the final model with more data, once we
+determined with all the hyperparameters within the model, we retrained
+the final model with both training and validation dataset together. We
+end up reaching a retraining loss of 1.1185 and a retraining RMSE of
+1.0576.
+
+    \hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+Throughout this final project, we have practiced the pipeline of
+building neural network models to solve a practical problem. In
+specific, we exercised various methods and techniques in data
+preprocessing, model building and training, and fine-tuning.
+
+Moreover, throughout the tuning process, we noticed that the performance
+could increase a lot by using a relatively smaller batch size, which
+might because of the consistency of the distribution of the image data
+in the training data of this task.
+
+Besides, we notice that because of the relatively small difference
+between the prediction and the label under the original unit, evaluation
+and the converges of the model would be extremely hard if we did not
+convert the labels into a different unit to magnify the difference
+during data preprocessing. Also, we observed the problem of vanishing
+gradients during the model training, which again highlights the
+importance of data preparation, model structure, and choice of
+hyperparameters.
+
+    \hypertarget{future-work}{%
+\section{Future Work}\label{future-work}}
+
+For data preprocessing, noticed that some of the training images given
+include views of noisy backgrounds toward the boundary of the image or
+far away from the robot's hand. Thus, it might be useful to consider
+cropping techniques so that the model could better focus on the hand and
+not be distracted by the noise. Besides, augmentation techniques might
+be useful to enhance the generalization performance of the model.
+However, as our task is to predict the coordinates of the fingertips of
+the robot, it does not make sense to rotate or flip the images. In the
+future, it might be a good idea to explore other data augmentation
+techniques to increase the sample size. Another approach to increase the
+sample size and might be worth considering in this scenario is weak
+supervised or semi-supervised learning techniques. But it might not be
+very useful to employ on this relatively simple task.
+
+In terms of the model architecture, here we've only experimented
+VGG16/VGG19/ResNet50 as a base model and added a fully-connected output
+layer on top of it. It might be worth considering to try out other more
+complicated architectures and deeper networks as the base model, so that
+the model would have more capacity to learn more structures from the
+data. Besides the base model, it might also be a good idea to add more
+additional layers on top of the base model that is more cater to the
+specific charasteristics of this task. Building the network from scratch
+might also be an option. However, I personally do not believe that it
+would benefit too much in terms of performance given the time
+consumption.
+
+Lastly, since this is a relatively simple and straightforward task, it
+might be a good idea to consider implementing the AutoML framework,
+which would make the model selection and hyperparameter tuning process a
+lot easier compared to doing them manually. I tried to implement H2O and
+Auto Pytorch framework when I started on this project, but
+unfortunately, neither of them works because of the dimension problems
+of the input data I guess. Thus, if we could fit the data into AutoML
+framework, there might be a chance to elevate the performance overall,
+especially considering that AutoML framework enables ensemble networks
+which might construct a more effective network architecture for this
+task.
+
+Overall, as long as there's a loss, there would be infinitely many
+possible solutions to consider to keep minimizing the loss. But there
+would always be a trade-off between the model performance and the time
+consumed in building and optimizing the model. Thus, it might be a good
+idea to find a balance between model performance and time constraints
+depending on the practical usage of the model.
+
+    \hypertarget{references}{%
+\section{References}\label{references}}
+
+\begin{itemize}
+\item
+  Aakanksha, I. Güzey, R. Anant, and S. Haldar. (2022). CSCI-UA. 473
+  Intro to Machine Learning, Fall 2022.
+  https://kaggle.com/competitions/csci-ua-473-intro-to-machine-learning-fall22
+\item
+  François Chollet, et al.~(2015). Keras. https://keras.io
+\item
+  L. Pinto. (2022). CSCI-UA 473 Introduction to Machine Learning, Fall
+  2022. Campuswire. https://campuswire.com/c/G6C251796
+\item
+  P. Dube. (2022). DS-UA 301 Advanced Topics in Data Science: Advanced
+  Techniques in ML and Deep Learning, Fall 2022. NYU Brightspace.
+  https://brightspace.nyu.edu/d2l/home/219804
+\end{itemize}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
